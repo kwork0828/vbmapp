@@ -527,7 +527,7 @@ function enterApp(profile) {
   currentProfile = profile;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('manage-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display = '';
+  document.getElementById('app-screen').style.display = 'block';
   document.getElementById('hdr-name').textContent = profile.name;
   document.getElementById('hdr-avatar').textContent = profile.name[0];
   renderApp();
@@ -536,7 +536,7 @@ function enterApp(profile) {
 function logout() {
   currentProfile = null;
   document.getElementById('app-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = '';
+  document.getElementById('login-screen').style.display = 'flex';
   renderProfileList();
 }
 
@@ -545,12 +545,12 @@ function logout() {
 // ═══════════════════════════════════════════
 function showManage() {
   document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('manage-screen').style.display = '';
+  document.getElementById('manage-screen').style.display = 'block';
   renderManage();
 }
 function showLogin() {
   document.getElementById('manage-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = '';
+  document.getElementById('login-screen').style.display = 'flex';
   renderProfileList();
 }
 function renderManage() {
