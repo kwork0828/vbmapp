@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>VB-MAPP 레벨2 체크리스트</title>
+<style>
+  :root {
+    --primary: #6C63FF;
+    --primary-light: #EEF0FF;
+    --success: #22C55E;
+    --success-light: #DCFCE7;
+    --danger: #EF4444;
+    --warning: #F59E0B;
+    --bg: #F8F9FF;
+    --card: #FFFFFF;
+    --text: #1E1E2E;
+    --muted: #6B7280;
+    --border: #E5E7EB;
+    --radius: 16px;
+    --shadow: 0 2px 12px rgba(108,99,255,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 24px;
+  }
+  .login-card {
+    background: white; border-radius: 24px; padding: 36px 28px;
+    width: 100%; max-width: 380px; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .login-logo { font-size: 48px; margin-bottom: 12px; }
+  .login-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+  .login-sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+  .tab-row { display: flex; background: #F3F4F6; border-radius: 12px; padding: 4px; margin-bottom: 24px; }
+  .tab-btn {
+    flex: 1; padding: 9px; border: none; background: transparent; border-radius: 9px;
+    font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; color: var(--muted);
+  }
+  .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .form-group { margin-bottom: 16px; text-align: left; }
+  .form-label { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; display: block; }
+  .form-input {
+    width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px;
+    font-size: 16px; outline: none; transition: border-color 0.2s; background: #FAFAFA;
+  }
+  .form-input:focus { border-color: var(--primary); background: white; }
+  .btn-primary {
+    width: 100%; padding: 16px; background: var(--primary); color: white; border: none;
+    border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s; margin-top: 4px;
+  }
+  .btn-primary:active { transform: scale(0.97); }
+  .profile-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .profile-item {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    border: 2px solid var(--border); border-radius: 14px; cursor: pointer;
+    transition: all 0.2s; background: #FAFAFA; text-align: left;
+  }
+  .profile-item:hover, .profile-item.selected { border-color: var(--primary); background: var(--primary-light); }
+  .profile-avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--primary);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; flex-shrink: 0;
+  }
+  .profile-name { font-size: 15px; font-weight: 600; }
+  .profile-progress { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .pin-inputs { display: flex; gap: 10px; justify-content: center; margin: 16px 0; }
+  .pin-input {
+    width: 52px; height: 60px; text-align: center; font-size: 24px; font-weight: 700;
+    border: 2px solid var(--border); border-radius: 12px; outline: none;
+    transition: border-color 0.2s; background: #FAFAFA;
+  }
+  .pin-input:focus { border-color: var(--primary); background: white; }
+  .error-msg { color: var(--danger); font-size: 13px; margin-top: 8px; display: none; }
+  .divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--muted); font-size: 13px; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── APP ── */
+  #app-screen { display: none; }
+  .app-header {
+    background: white; border-bottom: 1px solid var(--border); padding: 14px 20px;
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-left { display: flex; align-items: center; gap: 10px; }
+  .header-avatar {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--primary);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; flex-shrink: 0;
+  }
+  .header-name { font-size: 16px; font-weight: 700; }
+  .header-sub { font-size: 11px; color: var(--muted); }
+  .btn-logout {
+    padding: 8px 14px; border: 1px solid var(--border); background: white;
+    border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted);
+  }
+
+  .overall-card {
+    margin: 16px 16px 0; padding: 20px; background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: var(--radius); color: white;
+  }
+  .overall-label { font-size: 13px; opacity: 0.85; margin-bottom: 6px; }
+  .overall-score { font-size: 36px; font-weight: 800; }
+  .overall-score span { font-size: 18px; font-weight: 400; opacity: 0.75; }
+  .overall-bar-bg { height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; margin-top: 12px; }
+  .overall-bar { height: 8px; background: white; border-radius: 4px; transition: width 0.4s; }
+  .overall-pct { font-size: 12px; opacity: 0.85; margin-top: 6px; text-align: right; }
+
+  .section-list { padding: 16px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
+
+  .section-card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .section-header {
+    padding: 18px 20px; cursor: pointer; user-select: none;
+    display: flex; align-items: center; gap: 12px;
+    border-left: 4px solid var(--primary);
+  }
+  .section-icon { font-size: 22px; flex-shrink: 0; }
+  .section-info { flex: 1; }
+  .section-title { font-size: 16px; font-weight: 700; }
+  .section-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .section-badge {
+    background: var(--primary-light); color: var(--primary);
+    font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; flex-shrink: 0;
+  }
+  .section-badge.done { background: var(--success-light); color: var(--success); }
+  .chevron { font-size: 18px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .section-card.open .chevron { transform: rotate(180deg); }
+
+  .section-progress-bar { height: 4px; background: #F3F4F6; }
+  .section-progress-fill { height: 4px; background: var(--primary); transition: width 0.3s; }
+  .section-progress-fill.done { background: var(--success); }
+
+  .items-container { display: none; padding: 4px 0 12px; }
+  .section-card.open .items-container { display: block; }
+
+  .item-row {
+    display: flex; align-items: flex-start; gap: 14px; padding: 14px 20px;
+    border-top: 1px solid #F9FAFB; cursor: pointer; transition: background 0.15s;
+  }
+  .item-row:active { background: #F9FAFB; }
+  .item-num {
+    width: 28px; height: 28px; border-radius: 8px; background: #F3F4F6;
+    font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: var(--muted); margin-top: 1px;
+  }
+  .item-num.checked { background: var(--primary); color: white; }
+  .item-content { flex: 1; }
+  .item-text { font-size: 14px; line-height: 1.6; color: var(--text); }
+  .item-example { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+  .custom-check {
+    width: 26px; height: 26px; border: 2.5px solid var(--border); border-radius: 8px;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; margin-top: 1px;
+  }
+  .custom-check.checked { background: var(--primary); border-color: var(--primary); }
+  .custom-check.checked::after { content: '✓'; color: white; font-size: 15px; font-weight: 700; }
+
+  .save-toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: #1E1E2E; color: white; padding: 12px 24px; border-radius: 30px;
+    font-size: 14px; font-weight: 600; transition: transform 0.3s; z-index: 999;
+    white-space: nowrap;
+  }
+  .save-toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── MANAGE PROFILES ── */
+  .manage-link { text-align: center; margin-top: 16px; }
+  .manage-link button { background: none; border: none; color: var(--primary); font-size: 13px; cursor: pointer; text-decoration: underline; }
+
+  #manage-screen { display: none; min-height: 100vh; background: var(--bg); padding: 24px 20px; }
+  .manage-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .back-btn { background: white; border: 1px solid var(--border); padding: 10px 16px; border-radius: 12px; font-size: 14px; cursor: pointer; font-weight: 600; }
+  .manage-title { font-size: 20px; font-weight: 800; }
+  .profile-manage-item {
+    display: flex; align-items: center; gap: 12px; padding: 16px;
+    background: white; border-radius: 14px; margin-bottom: 10px;
+    box-shadow: var(--shadow);
+  }
+  .delete-btn { background: #FEE2E2; border: none; color: var(--danger); padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; margin-left: auto; }
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🧩</div>
+    <div class="login-title">VB-MAPP 레벨 2</div>
+    <div class="login-sub">마일스톤 평가 (18-30개월)</div>
+
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('select')">프로필 선택</button>
+      <button class="tab-btn" onclick="switchTab('new')">새 프로필</button>
+    </div>
+
+    <!-- SELECT PROFILE TAB -->
+    <div id="tab-select">
+      <div id="profile-list-empty" style="text-align:center; color:var(--muted); padding:20px 0; font-size:14px;">
+        아직 등록된 프로필이 없어요.<br>새 프로필을 만들어주세요!
+      </div>
+      <div class="profile-list" id="profile-list"></div>
+
+      <div id="pin-enter-section" style="display:none;">
+        <div style="font-size:14px; color:var(--muted); margin-bottom:4px;">PIN 번호 4자리를 입력해주세요</div>
+        <div class="pin-inputs">
+          <input class="pin-input" type="number" maxlength="1" id="p0" oninput="pinMove(0)" inputmode="numeric" pattern="[0-9]*">
+          <input class="pin-input" type="number" maxlength="1" id="p1" oninput="pinMove(1)" inputmode="numeric" pattern="[0-9]*">
+          <input class="pin-input" type="number" maxlength="1" id="p2" oninput="pinMove(2)" inputmode="numeric" pattern="[0-9]*">
+          <input class="pin-input" type="number" maxlength="1" id="p3" oninput="pinMove(3)" inputmode="numeric" pattern="[0-9]*">
+        </div>
+        <div class="error-msg" id="pin-error">❌ PIN이 맞지 않아요. 다시 시도해주세요.</div>
+        <button class="btn-primary" onclick="loginWithPin()">로그인</button>
+      </div>
+
+      <div class="manage-link">
+        <button onclick="showManage()">프로필 관리</button>
+      </div>
+    </div>
+
+    <!-- NEW PROFILE TAB -->
+    <div id="tab-new" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">아이 이름</label>
+        <input class="form-input" type="text" id="new-name" placeholder="예: 김민준" maxlength="20">
+      </div>
+      <div class="form-group">
+        <label class="form-label">PIN 번호 4자리</label>
+        <div class="pin-inputs">
+          <input class="pin-input" type="number" maxlength="1" id="n0" oninput="newPinMove(0)" inputmode="numeric" pattern="[0-9]*">
+          <input class="pin-input" type="number" maxlength="1" id="n1" oninput="newPinMove(1)" inputmode="numeric" pattern="[0-9]*">
+          <input class="pin-input" type="number" maxlength="1" id="n2" oninput="newPinMove(2)" inputmode="numeric" pattern="[0-9]*">
+          <input class="pin-input" type="number" maxlength="1" id="n3" oninput="newPinMove(3)" inputmode="numeric" pattern="[0-9]*">
+        </div>
+      </div>
+      <div class="error-msg" id="new-error">이름을 입력하고 PIN 4자리를 모두 입력해주세요.</div>
+      <button class="btn-primary" onclick="createProfile()">프로필 만들기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MANAGE SCREEN ═══ -->
+<div id="manage-screen">
+  <div class="manage-header">
+    <button class="back-btn" onclick="showLogin()">← 뒤로</button>
+    <div class="manage-title">프로필 관리</div>
+  </div>
+  <div id="manage-list"></div>
+</div>
+
+<!-- ═══ APP SCREEN ═══ -->
+<div id="app-screen">
+  <div class="app-header">
+    <div class="header-left">
+      <div class="header-avatar" id="hdr-avatar"></div>
+      <div>
+        <div class="header-name" id="hdr-name"></div>
+        <div class="header-sub">VB-MAPP 레벨 2</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">로그아웃</button>
+  </div>
+
+  <div class="overall-card">
+    <div class="overall-label">전체 진행률</div>
+    <div class="overall-score"><span id="overall-done">0</span> <span>/ 60 완료</span></div>
+    <div class="overall-bar-bg"><div class="overall-bar" id="overall-bar" style="width:0%"></div></div>
+    <div class="overall-pct" id="overall-pct">0%</div>
+  </div>
+
+  <div class="section-list" id="section-list"></div>
+</div>
+
+<!-- Save Toast -->
+<div class="save-toast" id="save-toast">✅ 저장 완료</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════
+const SECTIONS = [
+  {
+    id: 'mand', title: '맨드', icon: '🗣️',
+    desc: '아동이 동기(MOs)에 의한 맨드를 자발적으로 하는가?',
+    items: [
+      { num: 6, text: '촉진없이 20가지의 빠진 아이템을 맨드한다.', example: '예: 크레용을 주면 종이를 맨드' },
+      { num: 7, text: '원하는 활동을 즐기기 위해 요구된 5가지 행동을 다른 사람에게 맨드한다.', example: '예: 밖에 나가기 위해 "열어", 그네에서 "밀어"' },
+      { num: 8, text: '2개 이상의 단어를 포함하는 5가지 맨드를 한다. (I want 불포함)', example: '예: 빨리 가, 내 차례, 주스 따라' },
+      { num: 9, text: '30분동안 15가지 다른 맨드를 자발적으로 한다.', example: '예: 놀자. 열어. 책 줘' },
+      { num: 10, text: '특정한 맨드 훈련없이 10가지 새로운 맨드를 한다.', example: '예: 자발적으로 "고양이 어디갔어?"를 맨드 훈련없이 말한다.' }
+    ]
+  },
+  {
+    id: 'tact', title: '택트', icon: '👆',
+    desc: '아동이 명사와 동사를 택트하는가?',
+    items: [
+      { num: 6, text: '"이게 뭐야"라고 물었을 때, 25가지 아이템을 택트한다.', example: '예: 책, 신발, 자동차, 강아지, 모자' },
+      { num: 7, text: '50개 아이템중 3개의 예를 택트 일반화 한다.', example: '예: 3가지 다른 자동차를 택트한다.' },
+      { num: 8, text: '"나 뭐하고 있어"라고 물으면 10가지 행동을 택트한다.', example: '예: 점핑, 잠자기, 먹기' },
+      { num: 9, text: '50가지 두가지 요소 명사-동사 조합을 택트한다.', example: '예: 얼굴 닦고있어, 아기 자고있어' },
+      { num: 10, text: '200개 명사 그리고/또는 동사(또는 다른 언어 부분)를 택트한다.', example: '알고있는 택트 리스트 기준' }
+    ]
+  },
+  {
+    id: 'listener', title: '청자 반응', icon: '👂',
+    desc: '아동이 더 진보된 청자 기술을 습득하고 있는가?',
+    items: [
+      { num: 6, text: '뒤섞인 6개중에서 정확한 아이템을 선택한다. 40가지 물건 또는 사진', example: '예: 고양이 찾아봐, 볼 만져봐' },
+      { num: 7, text: '뒤섞인 8개중에서 3가지 예를 선택하는 등 청자변별(LDs)을 일반화한다. 50가지 물건', example: '예: 아동은 열차의 3가지 예를 찾는다.' },
+      { num: 8, text: '지시에 따라 10가지 특정한 동작 액션을 보여준다.', example: '예: 박수치기 보여 줘. 펄쩍 뛰어 봐' },
+      { num: 9, text: '50개의 두가지 요소 명사-동사 조합의 지시어에 따른다.', example: '예: 아기가 자는거 보여줘. 그네 밀어' },
+      { num: 10, text: '250개 아이템이 불려지면, 책, 사진 장면, 또는 일반적인 환경에서 정확한 아이템을 선택한다.', example: '테스트 되거나 알려진 단어 리스트 기준' }
+    ]
+  },
+  {
+    id: 'visual', title: '시지각 기술과 매칭', icon: '👁️',
+    desc: '아동이 동일한, 유사한 물건과 사진을 매칭하는가?',
+    items: [
+      { num: 6, text: '뒤섞인 6개중에서 동일한 물건 또는 사진을 매칭한다. 25아이템', example: '' },
+      { num: 7, text: '유사한 색과 모양을 주어진 모델의 색 또는 모양에 매칭한다. 10가지 (뒤섞인 6개중에서)', example: '예: 색종이의 빨간, 파란, 녹색 그룹과 곰을 색으로 매칭한다.' },
+      { num: 8, text: '3개 비슷한 자극을 포함하는 뒤섞인 8개중에서 동일한 물건 또는 사진을 매칭한다. 25아이템', example: '예: 강아지를 고양이, 돼지, 말도 포함하는 배열중에서 강아지를 매칭한다.' },
+      { num: 9, text: '뒤섞인 10개중에서 유사한 물건 또는 사진을 매칭한다. 25아이템', example: '예: 포트 트럭을 토요다 트럭에 매칭한다.' },
+      { num: 10, text: '3개의 유사한 자극을 포함하는 뒤섞인 10개중에서 동일하지 않은 물건(3D)을 사진(2D)에 매칭한다. 그리고/또는 반대로도.', example: '' }
+    ]
+  },
+  {
+    id: 'play', title: '독립 놀이', icon: '🧸',
+    desc: '아동이 자동적으로 강화받는 독립놀이 행동에 참여하는가?',
+    items: [
+      { num: 6, text: '5개 아이템이나 장난감 세트들중에서 해당하는 장난감 또는 부속이 안보일 때 찾는다.', example: '예: 퍼즐 조각, drop-in 장난감의 공, 애기 인형의 젖병' },
+      { num: 7, text: '5개 아이템의 기능에 따라서 장난감이나 물건의 이용을 독립적으로 보여준다.', example: '예: 기차 선로에 기차를 놓기, 수레를 끌기, 귀에 전화를 들기' },
+      { num: 8, text: '2회에 걸쳐 일상적인 아이템을 창의적인 방법으로 논다.', example: '예: 그릇을 드럼처럼 논다. 박스를 상상의 자동차로 논다.' },
+      { num: 9, text: '총 5분에 걸쳐서 구조물과 운동장 기구에서 독립적으로 논다. (30분 관찰)', example: '예: 미끄럼틀 내려가기, 그네타기' },
+      { num: 10, text: '5가지 세트의 재료의 복수의 부속을 가진 장난감을 조립한다.', example: '예: 듀플로, Mr.Potato Head, Little People sets, Cooties bugs, Kid K\'Nex' }
+    ]
+  },
+  {
+    id: 'social', title: '사회성 행동과 사회성 놀이', icon: '🤝',
+    desc: '아동이 다른 아동과의 활동에 자발적으로 참여하고 언어적인 상호작용을 하는가?',
+    items: [
+      { num: 6, text: '2회에 걸쳐 한명이 또래와 신체적인 상호작용을 시작한다. (30분 동안)', example: '예: 손수레를 민다, 손을 잡는다, Ring Around the Rosy' },
+      { num: 7, text: '5번, 또래들에게 자발적으로 맨드한다. (60분 관찰)', example: '예: 내 차례, 밀어줘, 여기봐! 이리와!' },
+      { num: 8, text: '어른의 촉진이나 강화가 없이 5분동안 또래와 지속된 사회적 놀이를 한다. (30분 동안)', example: '예: 놀이 세트를 협동해서 만든다, 물 놀이' },
+      { num: 9, text: '5번, 또래들의 맨드에 자발적으로 반응한다.', example: '예: 손수레 밀어줘. 기차 하고 싶어' },
+      { num: 10, text: '2번, 게임, 사회적인 놀이 등에 참여하기 위해 다른 또래에게 자발적으로 맨드한다. (60분 동안)', example: '예: 얘들아 이리와, 같이 구멍파자' }
+    ]
+  },
+  {
+    id: 'imitation', title: '동작모방', icon: '🪞',
+    desc: '다른 사람의 행동을 모방하는가?',
+    items: [
+      { num: 6, text: '3가지 물건중에서 특정한 물건을 선택하도록 요구하는 10가지 액션을 모방한다.', example: '예: 나팔과 벨을 포함하는 물건들 중에서 드럼스틱을 선택하고 드럼치는 것을 모방한다' },
+      { num: 7, text: '"이렇게 해봐"라는 촉진으로 20가지 소근육 액션을 모방한다.', example: '예: 손가락 꼬물거리기, 꼬집기, 주먹지기, 나비만들기' },
+      { num: 8, text: '"이렇게 해봐"라는 촉진으로 10가지의 3가지로 구성된 일련의 액션을 모방한다.', example: '예: 박수, 점프, 발가락 만지기; 인형 집기, 인형침대에 인형을 놓고 침대 흔들기' },
+      { num: 9, text: '자연스런 환경에서 5가지 기능적인 기술을 자발적으로 모방한다.', example: '예: 스픈으로 먹기, 코트 걸기, 신발 치우기' },
+      { num: 10, text: '어른이 물건을 가지도 또는 없이, 보여준 어떤 새로운 동작을 모방(또는 근접하게 시도)한다.', example: '예: "일반화된 모방 레파토리"' }
+    ]
+  },
+  {
+    id: 'echoic', title: 'ECHOIC', icon: '🔊',
+    desc: '아동은 특정한 단어와 어구를 즉시 반복(에코)하는가?',
+    items: [
+      { num: 6, text: 'EESA 서브테스트 최소 50점 (그룹2에서 최소 20점)', example: '' },
+      { num: 7, text: 'EESA 서브테스트 최소 60점', example: '' },
+      { num: 8, text: 'EESA 서브테스트 최소 70점', example: '' },
+      { num: 9, text: 'EESA 서브테스트 최소 80점', example: '' },
+      { num: 10, text: 'EESA 서브테스트 최소 90점 (그룹4와 5에서 최소 10점)', example: '' }
+    ]
+  },
+  {
+    id: 'lrffc', title: 'LRFFC', icon: '🧠',
+    desc: '아동이 청자로서 기능, 특징, 또는 분류로 명사와 동사를 이해하는가?',
+    items: [
+      { num: 6, text: '5가지 물건을 각각 제시하고, 음성 빈칸채우기(You eat…, You drink…) 질문할 때, 5가지의 음식 또는 음료를 선택한다.', example: '4가지 비음식 또는 비음료 아이템 포함' },
+      { num: 7, text: '25가지 어떤 형태의 LRFFC 채우기 문장, 8가지 물건중에서 정확한 아이템을 선택한다.', example: '예: You sit on a…' },
+      { num: 8, text: '25가지 명사-동사 what, which, who 질문, 10가지 물건(또는 책에서)중에서 정확한 아이템을 선택한다.', example: '예: What do you ride? Which one barks? Who can hop?' },
+      { num: 9, text: '각각의 아이템에 대해서 독립적으로 제시된 3가지 언어적 질문에 해당하는 아이템을 선택한다. 25가지', example: '예: 동물을 찾아라. 뭐가 짖어? 뭐가 발이 있어?' },
+      { num: 10, text: 'LRFFC 시행의 50%에 해당하는 아이템을 자발적으로 택트한다.', example: '예: "동물을 찾아봐"라는 음성 질문과 개 사진이 주어지면 "개"라고 말한다.' }
+    ]
+  },
+  {
+    id: 'intraverbal', title: 'Intraverbal', icon: '💬',
+    desc: '다른 사람의 말하는 내용에 대해서 음성적으로 반응한다.',
+    items: [
+      { num: 6, text: '10가지 어떠한 형태의 빈칸 채우기를 완성한다.', example: '예: 노래 빈칸, 사회성 게임과 fun fill-ins, 동물이나 물건 소리' },
+      { num: 7, text: '"이름이 뭐야?"라고 물었을 때, 이름을 말한다.', example: '' },
+      { num: 8, text: '25가지 빈칸 채우기를 완성한다. (노래 비포함)', example: '예: You eat… You sleep in a… Shoes and …' },
+      { num: 9, text: '25가지 what 질문에 답한다.', example: '예: 뭐를 빗어? What do you brush?' },
+      { num: 10, text: '25가지 who 또는 where 질문에 답한다.', example: '예: 너의 친구가 누구야? 너의 베개 어딨어?' }
+    ]
+  },
+  {
+    id: 'classroom', title: '교실 루틴과 그룹 기술', icon: '🏫',
+    desc: '아동이 교실에서의 일상적인 루틴을 따르고 그룹활동에 적절하게 참여하는가?',
+    items: [
+      { num: 6, text: '3분동안 부정적인 행동없이 그룹의 간식테이블, 점심테이블에 앉는다.', example: '' },
+      { num: 7, text: '단지 한번의 음성 촉진으로 자기의 물건을 치운다, 줄을 선다, 테이블로 온다.', example: '' },
+      { num: 8, text: '한번 이하의 제스쳐 또는 음성 촉진으로 교실 활동간 전이를 한다. (신체적 촉구 없이)', example: '' },
+      { num: 9, text: '방해적인 행동 또는 그룹을 이탈하려 하지 않고 5분 동안 작은 그룹(3명 이상)에 앉는다.', example: '' },
+      { num: 10, text: '10분동안 작은 그룹에 앉고, 시간의 50%동안 교사나 교구에 집중하고, 교사의 SD에 5번 반응한다.', example: '' }
+    ]
+  },
+  {
+    id: 'linguistic', title: '언어적 구조', icon: '📝',
+    desc: '아동의 조음이 더 분명해지고, 화자 및 청자 어휘가 늘고 있는가?',
+    items: [
+      { num: 6, text: '아동의 10가지 택트의 조음을 친숙한 어른이 해당 아이템을 택트하는 것을 보지 않고 이해할 수 있다.', example: '' },
+      { num: 7, text: '100단어의 청자 어휘를 가진다.', example: '예: 코 만져봐, 점프해봐, 열쇠 찾아봐' },
+      { num: 8, text: '에코익이 아닌 다른 형태로 하루에 10가지의 두단어 발화를 한다.', example: '예: 맨드, 택트' },
+      { num: 9, text: '하루에 5가지 상황에서 기능적인 운율체계(prosody)를 보인다.', example: '예: 이거 "내거야"와 같이 적절한 횟수로 어떤 단어를 강조하거나 강세를 준다' },
+      { num: 10, text: '300단어의 화자 어휘를 가진다. (에코익을 제외한 모든 언어 행동들)', example: '' }
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+let currentProfile = null;
+let selectedProfileId = null;
+
+function getProfiles() {
+  return JSON.parse(localStorage.getItem('vbmapp_profiles') || '[]');
+}
+function saveProfiles(profiles) {
+  localStorage.setItem('vbmapp_profiles', JSON.stringify(profiles));
+}
+function getChecks(profileId) {
+  return JSON.parse(localStorage.getItem('vbmapp_checks_' + profileId) || '{}');
+}
+function saveChecks(profileId, checks) {
+  localStorage.setItem('vbmapp_checks_' + profileId, JSON.stringify(checks));
+}
+
+// ═══════════════════════════════════════════
+//  LOGIN
+// ═══════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (tab==='select'&&i===0)||(tab==='new'&&i===1)));
+  document.getElementById('tab-select').style.display = tab==='select' ? '' : 'none';
+  document.getElementById('tab-new').style.display = tab==='new' ? '' : 'none';
+}
+
+function renderProfileList() {
+  const profiles = getProfiles();
+  const list = document.getElementById('profile-list');
+  const empty = document.getElementById('profile-list-empty');
+  const pinSection = document.getElementById('pin-enter-section');
+  list.innerHTML = '';
+  selectedProfileId = null;
+  pinSection.style.display = 'none';
+  if (profiles.length === 0) { empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  profiles.forEach(p => {
+    const checks = getChecks(p.id);
+    const done = Object.values(checks).filter(Boolean).length;
+    const pct = Math.round(done/60*100);
+    const div = document.createElement('div');
+    div.className = 'profile-item';
+    div.dataset.id = p.id;
+    div.innerHTML = `
+      <div class="profile-avatar">${p.name[0]}</div>
+      <div>
+        <div class="profile-name">${p.name}</div>
+        <div class="profile-progress">${done}/60 완료 (${pct}%)</div>
+      </div>`;
+    div.onclick = () => selectProfile(p.id);
+    list.appendChild(div);
+  });
+}
+
+function selectProfile(id) {
+  selectedProfileId = id;
+  document.querySelectorAll('.profile-item').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
+  document.getElementById('pin-enter-section').style.display = '';
+  document.getElementById('pin-error').style.display = 'none';
+  ['p0','p1','p2','p3'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('p0').focus();
+}
+
+function pinMove(idx) {
+  const el = document.getElementById('p'+idx);
+  const val = el.value.toString().slice(-1);
+  el.value = val;
+  if (val && idx < 3) document.getElementById('p'+(idx+1)).focus();
+}
+
+function loginWithPin() {
+  if (!selectedProfileId) return;
+  const pin = ['p0','p1','p2','p3'].map(id => document.getElementById(id).value).join('');
+  const profiles = getProfiles();
+  const profile = profiles.find(p => p.id === selectedProfileId);
+  if (!profile || profile.pin !== pin) {
+    document.getElementById('pin-error').style.display = '';
+    return;
+  }
+  document.getElementById('pin-error').style.display = 'none';
+  enterApp(profile);
+}
+
+function newPinMove(idx) {
+  const el = document.getElementById('n'+idx);
+  const val = el.value.toString().slice(-1);
+  el.value = val;
+  if (val && idx < 3) document.getElementById('n'+(idx+1)).focus();
+}
+
+function createProfile() {
+  const name = document.getElementById('new-name').value.trim();
+  const pin = ['n0','n1','n2','n3'].map(id => document.getElementById(id).value).join('');
+  const errEl = document.getElementById('new-error');
+  if (!name || pin.length < 4) { errEl.style.display = ''; return; }
+  errEl.style.display = 'none';
+  const profiles = getProfiles();
+  const profile = { id: Date.now().toString(), name, pin };
+  profiles.push(profile);
+  saveProfiles(profiles);
+  enterApp(profile);
+}
+
+function enterApp(profile) {
+  currentProfile = profile;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('manage-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = '';
+  document.getElementById('hdr-name').textContent = profile.name;
+  document.getElementById('hdr-avatar').textContent = profile.name[0];
+  renderApp();
+}
+
+function logout() {
+  currentProfile = null;
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = '';
+  renderProfileList();
+}
+
+// ═══════════════════════════════════════════
+//  MANAGE
+// ═══════════════════════════════════════════
+function showManage() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('manage-screen').style.display = '';
+  renderManage();
+}
+function showLogin() {
+  document.getElementById('manage-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = '';
+  renderProfileList();
+}
+function renderManage() {
+  const profiles = getProfiles();
+  const list = document.getElementById('manage-list');
+  list.innerHTML = '';
+  if (profiles.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:var(--muted);padding:20px;">등록된 프로필이 없습니다.</p>';
+    return;
+  }
+  profiles.forEach(p => {
+    const checks = getChecks(p.id);
+    const done = Object.values(checks).filter(Boolean).length;
+    const div = document.createElement('div');
+    div.className = 'profile-manage-item';
+    div.innerHTML = `
+      <div class="profile-avatar">${p.name[0]}</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;">${p.name}</div>
+        <div style="font-size:12px;color:var(--muted);">${done}/60 완료</div>
+      </div>
+      <button class="delete-btn" onclick="deleteProfile('${p.id}')">삭제</button>`;
+    list.appendChild(div);
+  });
+}
+function deleteProfile(id) {
+  if (!confirm('이 프로필과 모든 기록을 삭제할까요?')) return;
+  const profiles = getProfiles().filter(p => p.id !== id);
+  saveProfiles(profiles);
+  localStorage.removeItem('vbmapp_checks_' + id);
+  renderManage();
+}
+
+// ═══════════════════════════════════════════
+//  APP
+// ═══════════════════════════════════════════
+function renderApp() {
+  const checks = getChecks(currentProfile.id);
+  const list = document.getElementById('section-list');
+  list.innerHTML = '';
+  SECTIONS.forEach(sec => {
+    const card = document.createElement('div');
+    card.className = 'section-card';
+    card.id = 'sec-' + sec.id;
+    const done = sec.items.filter(item => checks[sec.id + '_' + item.num]).length;
+    const isDone = done === sec.items.length;
+    card.innerHTML = `
+      <div class="section-header" onclick="toggleSection('${sec.id}')">
+        <div class="section-icon">${sec.icon}</div>
+        <div class="section-info">
+          <div class="section-title">${sec.title}</div>
+          <div class="section-meta">${sec.desc}</div>
+        </div>
+        <div class="section-badge ${isDone?'done':''}">${done}/${sec.items.length}</div>
+        <div class="chevron">⌄</div>
+      </div>
+      <div class="section-progress-bar">
+        <div class="section-progress-fill ${isDone?'done':''}" style="width:${(done/sec.items.length*100)}%"></div>
+      </div>
+      <div class="items-container" id="items-${sec.id}">
+        ${sec.items.map(item => {
+          const key = sec.id + '_' + item.num;
+          const checked = !!checks[key];
+          return `
+          <div class="item-row" onclick="toggleItem('${sec.id}','${item.num}')">
+            <div class="item-num ${checked?'checked':''}" id="num-${sec.id}-${item.num}">${item.num}</div>
+            <div class="item-content">
+              <div class="item-text">${item.text}</div>
+              ${item.example ? `<div class="item-example">${item.example}</div>` : ''}
+            </div>
+            <div class="custom-check ${checked?'checked':''}" id="chk-${sec.id}-${item.num}"></div>
+          </div>`;
+        }).join('')}
+      </div>`;
+    list.appendChild(card);
+  });
+  updateOverall();
+}
+
+function toggleSection(id) {
+  const card = document.getElementById('sec-' + id);
+  card.classList.toggle('open');
+}
+
+function toggleItem(secId, num) {
+  const checks = getChecks(currentProfile.id);
+  const key = secId + '_' + num;
+  checks[key] = !checks[key];
+  saveChecks(currentProfile.id, checks);
+
+  const chk = document.getElementById('chk-' + secId + '-' + num);
+  const numEl = document.getElementById('num-' + secId + '-' + num);
+  chk.classList.toggle('checked', checks[key]);
+  numEl.classList.toggle('checked', checks[key]);
+
+  updateSection(secId);
+  updateOverall();
+  showToast();
+}
+
+function updateSection(secId) {
+  const checks = getChecks(currentProfile.id);
+  const sec = SECTIONS.find(s => s.id === secId);
+  const done = sec.items.filter(item => checks[secId + '_' + item.num]).length;
+  const isDone = done === sec.items.length;
+  const card = document.getElementById('sec-' + secId);
+  card.querySelector('.section-badge').textContent = done + '/' + sec.items.length;
+  card.querySelector('.section-badge').className = 'section-badge' + (isDone ? ' done' : '');
+  const fill = card.querySelector('.section-progress-fill');
+  fill.style.width = (done/sec.items.length*100) + '%';
+  fill.className = 'section-progress-fill' + (isDone ? ' done' : '');
+}
+
+function updateOverall() {
+  const checks = getChecks(currentProfile.id);
+  const done = Object.values(checks).filter(Boolean).length;
+  const pct = Math.round(done/60*100);
+  document.getElementById('overall-done').textContent = done;
+  document.getElementById('overall-bar').style.width = pct + '%';
+  document.getElementById('overall-pct').textContent = pct + '%';
+}
+
+let toastTimer;
+function showToast() {
+  const t = document.getElementById('save-toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+renderProfileList();
+</script>
+</body>
+</html>
